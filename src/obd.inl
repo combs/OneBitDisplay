@@ -4623,8 +4623,9 @@ unsigned char b, bCode;
 int iBufferSize = (pOBD->width * pOBD->height)/8; // size in bytes of the display devce
 int iWidthMask, iWidthShift;
 
-  iWidthMask = pOBD->width - 1;
+  iWidthMask = pOBD->width - 1; // 128 to 127
   iWidthShift = (pOBD->width == 128) ? 7:6; // 128 or 64 pixels wide
+  
   if (pCurrent == NULL || pCurrent > pAnimation + iLen)
      return NULL; // invalid starting point
 
@@ -4641,14 +4642,14 @@ int iWidthMask, iWidthShift;
         {
            b = pgm_read_byte(s++);
            i += b + 1;
-           obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift), 1);
+           obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift) << 3, 1);
         }
         else // skip/copy
         {
           if (bCode & 0x38)
           {
             i += ((bCode & 0x38) >> 3); // skip amount
-            obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift), 1);
+            obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift) << 3, 1);
           }
           if (bCode & 7)
           {
@@ -4679,7 +4680,7 @@ int iWidthMask, iWidthShift;
          if (bCode & 7)
          {
            i += (bCode & 7); // skip
-           obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift), 1);
+           obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift) << 3, 1);
          }
        }
        break;
@@ -4691,7 +4692,7 @@ int iWidthMask, iWidthShift;
        if (bCode & 7)
        {
          i += (bCode & 7); // skip amount
-         obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift), 1);
+         obdSetPosition(pOBD, i & iWidthMask, (i >> iWidthShift) << 3, 1);
        }
        break;
                   
